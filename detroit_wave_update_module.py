@@ -47,7 +47,7 @@ def update():
     res = messagebox.askyesno('Detroit Wave Updater', 'Is this where you\'d like to install the sound kit?\n' + os.getcwd())
     if res == False:
         messagebox.showinfo('Detroit Wave Updater', 'Move the updater, version.ini, and key file to the folder you\'d like to install the kit. Then run the updater again.')
-        sys.exit()
+        quit()
     else:
         messagebox.showinfo('Detroit Wave Updater', 'The newest version of Detroit Wave will be now be installed here.')
     if (os.path.isdir('Alex Kure - Sounds of Detroit III')):
@@ -56,21 +56,21 @@ def update():
         except:
             messagebox.showerror(
                 'Permissions Issue', 'Update failed due to a permissions issue. Try running the updater as administrator.')
-            sys.exit()
+            quit()
     try:
         download_and_unzip(
             'https://www.dropbox.com/s/zazlpjlshbm1r0r/Alex%20Kure%20-%20Detroit%20Wave.zip?dl=1')
-        messagebox.showinfo('Detroit Wave Updater', 'Update completed!\nFeel free to give me feedback on Instagram: @AlexKure')
+        messagebox.showinfo('Detroit Wave Updater', 'Update completed! Feel free to give me feedback on Instagram: @AlexKure')
 
     except:
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
-        sys.exit();
+        quit();
     file = open("version.ini", "r+")
     file.truncate(0)
     file.write(newest_version())
     file.close()
-    sys.exit()
+    quit()
 
 
 def main():
@@ -78,12 +78,12 @@ def main():
     if not (os.path.exists('key.exe')):
         messagebox.showerror(
             'Missing Key', 'Your "key" file was not found. Make sure it is in the same folder as the updater.')
-        sys.exit()
+        quit()
 
     if not (os.path.exists('version.ini')):
         messagebox.showerror(
             'Missing version.ini', 'Your version.ini file was not found in this folder. Make sure it is in the same folder as the updater')
-        sys.exit()
+        quit()
 
     """ Initiate config parser and read key file """
     config = configparser.ConfigParser()
@@ -99,13 +99,9 @@ def main():
             messagebox.showinfo(
                 'Registration Failed!', 'First time setup failed for some unknown reason.\nTry running as administrator.')
 
-    elif (config['REGISTRATION']['HWID'] == get_hwid()):
-        messagebox.showinfo('Validation Success!',
-                            'Device is registered already. Continuing')
-
     if (config['REGISTRATION']['HWID'] != get_hwid()):
         messagebox.showerror('Validation Failed!', 'Your device is not registered with this soundkit. Make sure you have purchased the soundkit and placed the provided key file in the same folder as this updater.\n\nFor assistance, DM me on Instagram: @AlexKure')
-        sys.exit()
+        quit()
 
     """ Check if a new version of the kit is available. If so, download it and unzip it to the current dir """
     if (current_version() != newest_version()):
@@ -119,4 +115,4 @@ def main():
         if res == True:
             update()
         else:
-            sys.exit()
+            quit()
