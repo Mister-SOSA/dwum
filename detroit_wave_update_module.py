@@ -120,4 +120,3 @@ def main():
             update()
         else:
             sys.exit()
-main()
