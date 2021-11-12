@@ -101,7 +101,7 @@ def main():
 
     elif (config['REGISTRATION']['HWID'] == get_hwid()):
         messagebox.showinfo('Validation Success!',
-                            'Device is registered with this program. :)')
+                            'Device is registered already. Continuing')
 
     if (config['REGISTRATION']['HWID'] != get_hwid()):
         messagebox.showerror('Validation Failed!', 'Your device is not registered with this soundkit. Make sure you have purchased the soundkit and placed the provided key file in the same folder as this updater.\n\nFor assistance, DM me on Instagram: @AlexKure')
