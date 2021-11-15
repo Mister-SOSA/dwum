@@ -8,7 +8,29 @@ import urllib.request as urllib
 from tkinter import messagebox
 import configparser
 import sys
+from supabase import create_client, Client
 
+url = 'https://apkhvjohfmclnxceppmh.supabase.co'
+key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNzAwNzAyMywiZXhwIjoxOTUyNTgzMDIzfQ.wmgNIIak3F7szd-ZpabIMNvQXlE9qYbdc4RXdQtCn8Y'
+Client = create_client(url, key)
+
+def log_auth(hwid, attempted_key, working_directory, key_found, version_found, auth_response, notes):
+    Client.table('auth').insert({"hwid": hwid,
+                                 "attempted_key": attempted_key,
+                                 "working_directory": working_directory,
+                                 "key_found": key_found,
+                                 "version_found": version_found,
+                                 "auth_response": auth_response,
+                                 "notes": notes}).execute()
+
+def log_updates(hwid, installed_version, available_version, accepted_update, working_directory, outcome, notes):
+    Client.table('updates').insert({"hwid": hwid,
+                                 "installed_version": installed_version,
+                                 "available_version": available_version,
+                                 "accepted_update": accepted_update,
+                                 "working_directory": working_directory,
+                                 "outcome": outcome,
+                                 "notes": notes}).execute()
 
 def get_hwid():
     """ Fetch this machine's HWID for authentication """
@@ -54,15 +76,18 @@ def update():
         try:
             shutil.rmtree('Alex Kure - Sounds of Detroit III/')
         except:
+            log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'FAILED', 'Update failed due to a permissions issue.')
             messagebox.showerror(
                 'Permissions Issue', 'Update failed due to a permissions issue. Try running the updater as administrator.')
             quit()
     try:
         download_and_unzip(
             'https://www.dropbox.com/s/zazlpjlshbm1r0r/Alex%20Kure%20-%20Detroit%20Wave.zip?dl=1')
+        log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'SUCCESS', 'Successfully updated.')
         messagebox.showinfo('Detroit Wave Updater', 'Update completed! Feel free to give me feedback on Instagram: @AlexKure')
 
     except:
+        log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'FAILED', 'Update failed due to file availability or network connection.')
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         quit();
@@ -74,34 +99,42 @@ def update():
 
 
 def main():
+    """ Initiate config parser and read key file """
+    config = configparser.ConfigParser()
+    config.read('key.exe')
+
+
     """ Check if user placed key file and version.ini in the same dir as updater """
     if not (os.path.exists('key.exe')):
+        log_auth(get_hwid(), 'NOT FOUND', os.getcwd(), 'FALSE', 'N/A', 'N/A', 'key.exe was not found in the current directory.')
         messagebox.showerror(
             'Missing Key', 'Your "key" file was not found. Make sure it is in the same folder as the updater.')
         quit()
 
     if not (os.path.exists('version.ini')):
+        log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'FALSE', 'N/A', 'version.ini was not found in the current directory.')
         messagebox.showerror(
             'Missing version.ini', 'Your version.ini file was not found in this folder. Make sure it is in the same folder as the updater')
         quit()
 
-    """ Initiate config parser and read key file """
-    config = configparser.ConfigParser()
-    config.read('key.exe')
-
     """ Check HWID with provided key file. If matched, proceed. If not, quit with error """
     if (config['REGISTRATION']['hwid'] == 'unregistered'):
+        log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
         try:
             with open('key.exe', 'w') as configfile:
                 config.write(configfile)
         except:
+            log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', 'First time registration failed.')
             messagebox.showinfo(
                 'Registration Failed!', 'First time setup failed for some unknown reason.\nTry running as administrator.')
 
     if (config['REGISTRATION']['HWID'] != get_hwid()):
+        log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', 'Piracy Protection Triggered.')
         messagebox.showerror('Validation Failed!', 'Your device is not registered with this soundkit. Make sure you have purchased the soundkit and placed the provided key file in the same folder as this updater.\n\nFor assistance, DM me on Instagram: @AlexKure')
         quit()
+    else:
+        log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', 'Successful Login.')
 
     """ Check if a new version of the kit is available. If so, download it and unzip it to the current dir """
     if (current_version() != newest_version()):
@@ -109,10 +142,12 @@ def main():
         if res == True:
             update()
         else:
+            log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), 'FAILED', 'User rejected update')
             messagebox.showinfo('Update Cancelled', 'If you change your mind, run this updater again to download the latest version of Detroit Wave.')
     else:
         res = messagebox.askyesno('Detroit Wave Updater', 'You already have the newest version of the soundkit. Would you like to reinstall it anyway?')
         if res == True:
+            log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'N/A', 'User reinstalled.')
             update()
         else:
             quit()
