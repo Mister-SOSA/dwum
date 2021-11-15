@@ -68,6 +68,7 @@ def update():
     """ Fetch newest version of kit and unzip it in the current directory """
     res = messagebox.askyesno('Detroit Wave Updater', 'Is this where you\'d like to install the sound kit?\n' + os.getcwd())
     if res == False:
+        log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), 'CANCELLED', 'User did not want to install to the current directory.')
         messagebox.showinfo('Detroit Wave Updater', 'Move the updater, version.ini, and key file to the folder you\'d like to install the kit. Then run the updater again.')
         quit()
     else:
@@ -142,7 +143,7 @@ def main():
         if res == True:
             update()
         else:
-            log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), 'FAILED', 'User rejected update')
+            log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), 'REJECTED', 'User rejected update')
             messagebox.showinfo('Update Cancelled', 'If you change your mind, run this updater again to download the latest version of Detroit Wave.')
     else:
         res = messagebox.askyesno('Detroit Wave Updater', 'You already have the newest version of the soundkit. Would you like to reinstall it anyway?')
