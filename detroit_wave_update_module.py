@@ -16,6 +16,7 @@ key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNzAw
 Client = create_client(url, key)
 
 def log_auth(hwid, attempted_key, working_directory, key_found, version_found, auth_response, ip_address, notes):
+    """ Send authentication results to SQL table """
     Client.table('auth').insert({"hwid": hwid,
                                  "attempted_key": attempted_key,
                                  "working_directory": working_directory,
@@ -26,6 +27,7 @@ def log_auth(hwid, attempted_key, working_directory, key_found, version_found, a
                                  "notes": notes}).execute()
 
 def log_updates(hwid, installed_version, available_version, accepted_update, working_directory, outcome, ip_address, notes):
+    """ Send update results to SQL table """
     Client.table('updates').insert({"hwid": hwid,
                                  "installed_version": installed_version,
                                  "available_version": available_version,
@@ -107,12 +109,12 @@ def update():
 def main():
     """ Initiate config parser and read key file """
     config = configparser.ConfigParser()
-    config.read('key.exe')
+    config.read('key.dll')
 
 
     """ Check if user placed key file and version.ini in the same dir as updater """
-    if not (os.path.exists('key.exe')):
-        log_auth(get_hwid(), 'NOT FOUND', os.getcwd(), 'FALSE', 'N/A', 'N/A', get_ip(), 'key.exe was not found in the current directory.')
+    if not (os.path.exists('key.dll')):
+        log_auth(get_hwid(), 'NOT FOUND', os.getcwd(), 'FALSE', 'N/A', 'N/A', get_ip(), 'key.dll was not found in the current directory.')
         messagebox.showerror(
             'Missing Key', 'Your "key" file was not found. Make sure it is in the same folder as the updater.')
         quit()
@@ -128,7 +130,7 @@ def main():
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
         try:
-            with open('key.exe', 'w') as configfile:
+            with open('key.dll', 'w') as configfile:
                 config.write(configfile)
         except:
             log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'First time registration failed.')
