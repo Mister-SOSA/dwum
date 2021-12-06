@@ -127,7 +127,7 @@ def update():
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         sys.exit();
-    file = open(sys.executable + "/version.ini", "r+")
+    file = open(sys.executable + "../version.ini", "r+")
     file.truncate(0)
     file.write(newest_version())
     file.close()
