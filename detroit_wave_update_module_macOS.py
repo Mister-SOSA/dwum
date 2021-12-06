@@ -74,13 +74,13 @@ def newest_version():
 
 def current_version():
     """ Fetch currently installed version number from local config file """
-    with open(sys.executable + '/version.ini') as f:
+    with open(os.path.join(sys.executable, '..', '..', 'Resources/version.ini')) as f:
         return f.readlines()[0]
 
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    f = open(sys.executable + "/dir.ini", "r+")
+    f = open(os.path.join(sys.executable, '..', '..', 'Resources/dir.ini'), "r+")
     current_dir = f.read().strip().replace("\x00", '')
     if (current_dir == 'undefined' or current_dir == ''):
         messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
@@ -127,7 +127,7 @@ def update():
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         sys.exit();
-    file = open(sys.executable + "../version.ini", "r+")
+    file = open(os.path.join(sys.executable, '..', '..', 'Resources/version.ini'), "r+")
     file.truncate(0)
     file.write(newest_version())
     file.close()
@@ -137,14 +137,14 @@ def update():
 def main():
     """ Initiate config parser and read key file """
     config = configparser.ConfigParser()
-    config.read('key.dll')
+    config.read(os.path.join(sys.executable, '..', '..', 'Resources/key.dll'))
 
     """ Check HWID with internal key file. If matched, proceed. If not, quit with error """
     if (config['REGISTRATION']['hwid'] == 'unregistered'):
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
         try:
-            with open(system.executable + 'key.dll', 'w') as configfile:
+            with open(os.path.join(sys.executable, '..', '..', 'Resources/key.dll'), 'w') as configfile:
                 config.write(configfile)
         except:
             log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'First time registration failed.')
