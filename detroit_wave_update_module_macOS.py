@@ -6,17 +6,19 @@ import os
 import shutil
 import subprocess
 import urllib.request as urllib
+import tkinter as tk
 from tkinter import messagebox
+from tkinter import *
+from tkinter import filedialog as fd
 import configparser
 import sys
-import tkinter as tk
 from supabase import create_client, Client
 from subprocess import Popen, PIPE
 
 url = 'https://apkhvjohfmclnxceppmh.supabase.co'
 key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNzAwNzAyMywiZXhwIjoxOTUyNTgzMDIzfQ.wmgNIIak3F7szd-ZpabIMNvQXlE9qYbdc4RXdQtCn8Y'
 Client = create_client(url, key)
-real_cwd = os.getcwd()[0:os.getcwd().index('Detroit Wave Updater.app')]
+real_cwd = os.getcwd()
 
 root = tk.Tk()
 root.overrideredirect(1)
@@ -53,12 +55,12 @@ def get_hwid():
 
 
 
-def download_and_unzip(url, extract_to=real_cwd):
+def download_and_unzip(url, install_directory):
     """ Function to download and unzip from url """
     print('\n\nDownloading Detroit Wave Soundkit. Please Wait...')
     http_response = urlopen(url)
     zipfile = ZipFile(BytesIO(http_response.read()))
-    zipfile.extractall(path=extract_to)
+    zipfile.extractall(path=install_directory)
 
 def get_ip():
     ip = get('https://api.ipify.org').content.decode('utf8')
@@ -79,24 +81,36 @@ def current_version():
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    res = messagebox.askyesno('Detroit Wave Updater', 'Is this where you\'d like to install the sound kit?\n' + real_cwd)
-    if res == False:
-        log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), get_ip(), 'CANCELLED', 'User did not want to install to the current directory.')
-        messagebox.showinfo('Detroit Wave Updater', 'Move the updater to the folder you\'d like to install the kit. Then run the updater again.')
-        quit()
+    f = open("dir.ini", "r+")
+    current_dir = f.read().strip()
+    if (current_dir == 'undefined' or current_dir == ''):
+        messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
+        install_dir = fd.askdirectory()
+        f.truncate(0)
+        f.write(install_dir)
+        f.close()
     else:
-        messagebox.showinfo('Detroit Wave Updater', 'The newest version of Detroit Wave will be installed here when you click OK.\nPlease be patient as the update is downloaded.\nThe program may appear unresponsive while downloading.')
-    if (os.path.isdir(real_cwd + 'Alex Kure - Sounds of Detroit III')):
+        res = messagebox.askyesno('Detroit Wave Updater', 'Would you like to update to the same directory?\n' + f.read().strip())
+        if res == True:
+            install_dir = f.read().strip()
+        else:
+            messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
+            install_dir = fd.askdirectory()
+            f.truncate(0)
+            f.write(install_dir)
+            f.close()
+    if (os.path.isdir(install_dir + 'Alex Kure - Detroit Wave')):
         try:
-            shutil.rmtree(real_cwd + 'Alex Kure - Sounds of Detroit III/')
+            shutil.rmtree(install_dir + 'Alex Kure - Detroit Wave/')
         except:
             log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), get_ip(),'FAILED', 'Update failed due to a permissions issue.')
             messagebox.showerror(
-                'Permissions Issue', 'Update failed due to a permissions issue. Try running the updater as administrator.')
+                'Permissions Issue', 'Update failed due to a permissions issue. Usually this means the folder you picked is protected by your computer.')
             quit()
     try:
+        messagebox.showinfo('Detroit Wave Updater', 'The download will begin once you click OK. Please be patient, as the file is quite large. The program may appear unresponsive while the kit downloads.')
         download_and_unzip(
-            'https://www.dropbox.com/s/zazlpjlshbm1r0r/Alex%20Kure%20-%20Detroit%20Wave.zip?dl=1')
+            'https://www.dropbox.com/s/zazlpjlshbm1r0r/Alex%20Kure%20-%20Detroit%20Wave.zip?dl=1', install_dir)
         log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'SUCCESS', get_ip(), 'Successfully updated.')
         messagebox.showinfo('Detroit Wave Updater', 'Update completed! Feel free to give me feedback on Instagram: @AlexKure')
 
@@ -117,21 +131,7 @@ def main():
     config = configparser.ConfigParser()
     config.read('key.dll')
 
-
-    """ Check if user placed key file and version.ini in the same dir as updater """
-    if not (os.path.exists('key.dll')):
-        log_auth(get_hwid(), 'NOT FOUND', os.getcwd(), 'FALSE', 'N/A', 'N/A', get_ip(), 'key.dll was not found in the current directory.')
-        messagebox.showerror(
-            'Missing Key', 'Your "key" file was not found.')
-        quit()
-
-    if not (os.path.exists('version.ini')):
-        log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'FALSE', 'N/A', get_ip(), 'version.ini was not found in the current directory.')
-        messagebox.showerror(
-            'Missing version.ini', 'Your version.ini file was not found.')
-        quit()
-
-    """ Check HWID with provided key file. If matched, proceed. If not, quit with error """
+    """ Check HWID with internal key file. If matched, proceed. If not, quit with error """
     if (config['REGISTRATION']['hwid'] == 'unregistered'):
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
@@ -158,6 +158,7 @@ def main():
         else:
             log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), 'REJECTED', get_ip(), 'User rejected update')
             messagebox.showinfo('Update Cancelled', 'If you change your mind, run this updater again to download the latest version of Detroit Wave.')
+            quit()
     else:
         res = messagebox.askyesno('Detroit Wave Updater', 'You already have the newest version of the soundkit. Would you like to reinstall it anyway?')
         if res == True:
@@ -165,3 +166,4 @@ def main():
             update()
         else:
             quit()
+
