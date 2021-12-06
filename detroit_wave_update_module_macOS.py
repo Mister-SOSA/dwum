@@ -74,20 +74,20 @@ def newest_version():
 
 def current_version():
     """ Fetch currently installed version number from local config file """
-    with open('version.ini') as f:
+    with open(sys.executable + '/version.ini') as f:
         return f.readlines()[0]
 
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    f = open("dir.ini", "r+")
+    f = open(sys.executable + "/dir.ini", "r+")
     current_dir = f.read().strip().replace("\x00", '')
     if (current_dir == 'undefined' or current_dir == ''):
         messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
         install_dir = fd.askdirectory()
         if install_dir == '':
             messagebox.showinfo('Detroit Wave Updater', 'You did not select a folder. Start the updater again to try again.')
-            quit()
+            sys.exit()
         else:
             f.truncate(0)
             f.write(install_dir)
@@ -101,7 +101,7 @@ def update():
             install_dir = fd.askdirectory()
             if install_dir == '':
                 messagebox.showinfo('Detroit Wave Updater', 'You did not select a folder. Start the updater again to try again.')
-                quit()
+                sys.exit()
             else:
                 f.truncate(0)
                 f.write(install_dir)
@@ -114,7 +114,7 @@ def update():
             log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), get_ip(),'FAILED', 'Update failed due to a permissions issue.')
             messagebox.showerror(
                 'Permissions Issue', 'Update failed due to a permissions issue. Usually this means the folder you picked is protected by your computer.')
-            quit()
+            sys.exit()
     try:
         messagebox.showinfo('Detroit Wave Updater', 'The download will begin once you click OK. Please be patient, as the file is quite large. The program may appear unresponsive while the kit downloads.')
         download_and_unzip(
@@ -126,12 +126,12 @@ def update():
         log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'FAILED',  get_ip(), 'Update failed due to file availability or network connection.')
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
-        quit();
-    file = open("version.ini", "r+")
+        sys.exit();
+    file = open(sys.executable + "/version.ini", "r+")
     file.truncate(0)
     file.write(newest_version())
     file.close()
-    quit()
+    sys.exit()
 
 
 def main():
@@ -144,7 +144,7 @@ def main():
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
         try:
-            with open('key.dll', 'w') as configfile:
+            with open(system.executable + 'key.dll', 'w') as configfile:
                 config.write(configfile)
         except:
             log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'First time registration failed.')
@@ -154,7 +154,7 @@ def main():
     if (config['REGISTRATION']['HWID'] != get_hwid()):
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'Piracy Protection Triggered.')
         messagebox.showerror('Validation Failed!', 'Your device is not registered with this soundkit. Make sure you have purchased the soundkit and are using your own copy of the updater.\n\nFor assistance, DM me on Instagram: @AlexKure')
-        quit()
+        sys.exit()
     else:
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'Successful Login.')
 
@@ -166,12 +166,11 @@ def main():
         else:
             log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), 'REJECTED', get_ip(), 'User rejected update')
             messagebox.showinfo('Update Cancelled', 'If you change your mind, run this updater again to download the latest version of Detroit Wave.')
-            quit()
+            sys.exit()
     else:
         res = messagebox.askyesno('Detroit Wave Updater', 'You already have the newest version of the soundkit. Would you like to reinstall it anyway?')
         if res == True:
             log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), 'N/A', get_ip(), 'User reinstalled.')
             update()
         else:
-            quit()
-
+            sys.exit()
