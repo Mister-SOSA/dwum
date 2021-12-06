@@ -18,7 +18,6 @@ from subprocess import Popen, PIPE
 url = 'https://apkhvjohfmclnxceppmh.supabase.co'
 key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNzAwNzAyMywiZXhwIjoxOTUyNTgzMDIzfQ.wmgNIIak3F7szd-ZpabIMNvQXlE9qYbdc4RXdQtCn8Y'
 Client = create_client(url, key)
-real_cwd = os.getcwd()
 
 root = tk.Tk()
 root.overrideredirect(1)
@@ -82,23 +81,32 @@ def current_version():
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
     f = open("dir.ini", "r+")
-    current_dir = f.read().strip()
+    current_dir = f.read().strip().replace("\x00", '')
     if (current_dir == 'undefined' or current_dir == ''):
         messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
         install_dir = fd.askdirectory()
-        f.truncate(0)
-        f.write(install_dir)
-        f.close()
-    else:
-        res = messagebox.askyesno('Detroit Wave Updater', 'Would you like to update to the same directory?\n' + f.read().strip())
-        if res == True:
-            install_dir = f.read().strip()
+        if install_dir == '':
+            messagebox.showinfo('Detroit Wave Updater', 'You did not select a folder. Start the updater again to try again.')
+            quit()
         else:
-            messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
-            install_dir = fd.askdirectory()
             f.truncate(0)
             f.write(install_dir)
             f.close()
+    else:
+        res = messagebox.askyesno('Detroit Wave Updater', 'Would you like to update to the same directory?\n' + current_dir)
+        if res == True:
+            install_dir = current_dir
+        else:
+            messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
+            install_dir = fd.askdirectory()
+            if install_dir == '':
+                messagebox.showinfo('Detroit Wave Updater', 'You did not select a folder. Start the updater again to try again.')
+                quit()
+            else:
+                f.truncate(0)
+                f.write(install_dir)
+                f.close()
+
     if (os.path.isdir(install_dir + 'Alex Kure - Detroit Wave')):
         try:
             shutil.rmtree(install_dir + 'Alex Kure - Detroit Wave/')
