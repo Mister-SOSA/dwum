@@ -80,9 +80,9 @@ def update():
         quit()
     else:
         messagebox.showinfo('Detroit Wave Updater', 'The newest version of Detroit Wave will be now be installed here.')
-    if (os.path.isdir('Alex Kure - Sounds of Detroit III')):
+    if (os.path.isdir('Alex Kure - Detroit Wave')):
         try:
-            shutil.rmtree('Alex Kure - Sounds of Detroit III/')
+            shutil.rmtree('Alex Kure - Detroit Wave/')
         except:
             log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), get_ip(),'FAILED', get_ip(), 'Update failed due to a permissions issue.')
             messagebox.showerror(
