@@ -15,6 +15,7 @@ from subprocess import Popen, PIPE
 url = 'https://apkhvjohfmclnxceppmh.supabase.co'
 key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNzAwNzAyMywiZXhwIjoxOTUyNTgzMDIzfQ.wmgNIIak3F7szd-ZpabIMNvQXlE9qYbdc4RXdQtCn8Y'
 Client = create_client(url, key)
+real_cwd = os.getcwd()[0:os.getcwd().index('Detroit Wave Updater.app')]
 
 def log_auth(hwid, attempted_key, working_directory, key_found, version_found, auth_response, ip_address, notes):
     """ Send authentication results to SQL table """
@@ -47,7 +48,7 @@ def get_hwid():
 
 
 
-def download_and_unzip(url, extract_to='.'):
+def download_and_unzip(url, extract_to=real_cwd):
     """ Function to download and unzip from url """
     print('\n\nDownloading Detroit Wave Soundkit. Please Wait...')
     http_response = urlopen(url)
@@ -73,16 +74,16 @@ def current_version():
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    res = messagebox.askyesno('Detroit Wave Updater', 'Is this where you\'d like to install the sound kit?\n' + os.getcwd())
+    res = messagebox.askyesno('Detroit Wave Updater', 'Is this where you\'d like to install the sound kit?\n' + real_cwd)
     if res == False:
         log_updates(get_hwid(), current_version(), newest_version(), 'FALSE', os.getcwd(), get_ip(), 'CANCELLED', get_ip(), 'User did not want to install to the current directory.')
         messagebox.showinfo('Detroit Wave Updater', 'Move the updater, version.ini, and key file to the folder you\'d like to install the kit. Then run the updater again.')
         quit()
     else:
         messagebox.showinfo('Detroit Wave Updater', 'The newest version of Detroit Wave will be now be installed here.')
-    if (os.path.isdir('Alex Kure - Sounds of Detroit III')):
+    if (os.path.isdir(real_cwd + 'Alex Kure - Sounds of Detroit III')):
         try:
-            shutil.rmtree('Alex Kure - Sounds of Detroit III/')
+            shutil.rmtree(real_cwd + 'Alex Kure - Sounds of Detroit III/')
         except:
             log_updates(get_hwid(), current_version(), newest_version(), 'TRUE', os.getcwd(), get_ip(),'FAILED', get_ip(), 'Update failed due to a permissions issue.')
             messagebox.showerror(
