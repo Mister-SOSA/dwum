@@ -77,6 +77,7 @@ def current_version():
     with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini')) as f:
         return f.readlines()[0]
 
+
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
     f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'))
@@ -88,9 +89,12 @@ def update():
             messagebox.showinfo('Detroit Wave Updater', 'You did not select a folder. Start the updater again to try again.')
             sys.exit()
         else:
-            f.truncate(0)
-            f.write(install_dir)
-            f.close()
+            try:
+                f.truncate(0)
+                f.write(install_dir)
+                f.close()
+            except Exception as e:
+                messagebox.showinfo('Detroit Wave Updater', e)
     else:
         res = messagebox.askyesno('Detroit Wave Updater', 'Would you like to update to the same directory?\n' + current_dir)
         if res == True:
@@ -102,9 +106,12 @@ def update():
                 messagebox.showinfo('Detroit Wave Updater', 'You did not select a folder. Start the updater again to try again.')
                 sys.exit()
             else:
-                f.truncate(0)
-                f.write(install_dir)
-                f.close()
+                try:
+                    f.truncate(0)
+                    f.write(install_dir)
+                    f.close()
+                except Exception as e:
+                    messagebox.showinfo('Detroit Wave Updater', e)
 
     if (os.path.isdir(install_dir + 'Alex Kure - Detroit Wave')):
         try:
@@ -126,11 +133,13 @@ def update():
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         sys.exit();
-    file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini'), "r+")
-    file.truncate(0)
-    file.write(newest_version())
-    file.close()
-    sys.exit()
+    file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini')), "r+")
+    try:
+        f.truncate(0)
+        f.write(newest_version())
+        f.close()
+    except Exception as e:
+        messagebox.showinfo('Detroit Wave Updater', e)
 
 
 def main():
@@ -143,12 +152,12 @@ def main():
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
         try:
-            with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/key.dll'), 'w') as configfile:
+            with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/key.dll')), 'w') as configfile:
                 config.write(configfile)
-        except:
-            log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'First time registration failed.')
+        except Exception as e:
+            log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), e)
             messagebox.showinfo(
-                'Registration Failed!', 'First time setup failed for some unknown reason.')
+                'Registration Failed!', 'First time setup failed.\n' + e)
 
     if (config['REGISTRATION']['HWID'] != get_hwid()):
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'Piracy Protection Triggered.')
