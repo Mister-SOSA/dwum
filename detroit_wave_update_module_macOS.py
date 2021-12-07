@@ -25,7 +25,7 @@ root.withdraw()
 
 def log_auth(hwid, attempted_key, working_directory, key_found, version_found, auth_response, ip_address, notes):
     """ Send authentication results to SQL table """
-    Client.table('auth').insert({"hwid": hwid,
+    Client.table('auth_mac').insert({"hwid": hwid,
                                  "attempted_key": attempted_key,
                                  "working_directory": working_directory,
                                  "key_found": key_found,
@@ -36,7 +36,7 @@ def log_auth(hwid, attempted_key, working_directory, key_found, version_found, a
 
 def log_updates(hwid, installed_version, available_version, accepted_update, working_directory, outcome, ip_address, notes):
     """ Send update results to SQL table """
-    Client.table('updates').insert({"hwid": hwid,
+    Client.table('updates_mac').insert({"hwid": hwid,
                                  "installed_version": installed_version,
                                  "available_version": available_version,
                                  "accepted_update": accepted_update,
