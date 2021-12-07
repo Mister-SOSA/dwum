@@ -154,10 +154,10 @@ def main():
         try:
             with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/key.dll'), 'w') as configfile:
                 config.write(configfile)
-        except Exception as e:
-            log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), e)
+        except:
+            log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'First time registration failed!')
             messagebox.showinfo(
-                'Registration Failed!', 'First time setup failed.\n' + e)
+                'Registration Failed!', 'First time setup failed.')
 
     if (config['REGISTRATION']['HWID'] != get_hwid()):
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'Piracy Protection Triggered.')
