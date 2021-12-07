@@ -80,7 +80,7 @@ def current_version():
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'))
+    f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'), 'r+')
     current_dir = f.read().strip().replace("\x00", '')
     if (current_dir == 'undefined' or current_dir == ''):
         messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
@@ -154,10 +154,10 @@ def main():
         try:
             with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/key.dll'), 'w') as configfile:
                 config.write(configfile)
-        except:
+        except Exception as e:
             log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'First time registration failed!')
             messagebox.showinfo(
-                'Registration Failed!', 'First time setup failed.')
+                'Registration Failed!', 'First time setup failed.\n' + str(e))
 
     if (config['REGISTRATION']['HWID'] != get_hwid()):
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), 'Piracy Protection Triggered.')
