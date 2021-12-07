@@ -136,7 +136,7 @@ def update():
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         sys.exit();
     try:
-        file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini'), "r+")
+        f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini'), "r+")
         f.truncate(0)
         f.write(newest_version())
         f.close()
