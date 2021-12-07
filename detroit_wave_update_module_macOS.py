@@ -133,7 +133,7 @@ def update():
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         sys.exit();
-    file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini')), "r+")
+    file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini'), "r+")
     try:
         f.truncate(0)
         f.write(newest_version())
@@ -152,7 +152,7 @@ def main():
         log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'SUCCESS', get_ip(), 'First time registration.')
         config['REGISTRATION']['hwid'] = get_hwid()
         try:
-            with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/key.dll')), 'w') as configfile:
+            with open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/key.dll'), 'w') as configfile:
                 config.write(configfile)
         except Exception as e:
             log_auth(get_hwid(), config['REGISTRATION']['hwid'], os.getcwd(), 'TRUE', 'TRUE', 'FAILED', get_ip(), e)
