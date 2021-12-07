@@ -80,7 +80,7 @@ def current_version():
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'), 'r+')
+    
     current_dir = f.read().strip().replace("\x00", '')
     if (current_dir == 'undefined' or current_dir == ''):
         messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
@@ -90,6 +90,7 @@ def update():
             sys.exit()
         else:
             try:
+                f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'), 'r+')
                 f.truncate(0)
                 f.write(install_dir)
                 f.close()
@@ -107,6 +108,7 @@ def update():
                 sys.exit()
             else:
                 try:
+                    f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'), 'r+')
                     f.truncate(0)
                     f.write(install_dir)
                     f.close()
@@ -133,8 +135,8 @@ def update():
         messagebox.showerror(
             'Update Failed!', 'Make sure you are connected to the internet and try again.\nIf this error persists, contact me on Instagram: @AlexKure')
         sys.exit();
-    file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini'), "r+")
     try:
+        file = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/version.ini'), "r+")
         f.truncate(0)
         f.write(newest_version())
         f.close()
