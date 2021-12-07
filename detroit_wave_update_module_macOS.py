@@ -80,7 +80,7 @@ def current_version():
 
 def update():
     """ Fetch newest version of kit and unzip it in the current directory """
-    
+    f = open(os.path.join(sys.executable.split('MacOS')[0], 'Resources/dir.ini'), 'r+')
     current_dir = f.read().strip().replace("\x00", '')
     if (current_dir == 'undefined' or current_dir == ''):
         messagebox.showinfo('Detroit Wave Updater', 'Please select the folder where you\'d like the kit to be installed. Usually this is your FL Studio Packs directory.')
