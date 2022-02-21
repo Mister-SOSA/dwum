@@ -40,7 +40,7 @@ def log_updates(hwid, installed_version, available_version, accepted_update, wor
 def get_hwid():
     """ Fetch this machine's HWID for authentication """
     cmd = 'wmic csproduct get uuid'
-    uuid = str(subprocess.check_output(cmd))
+    uuid = str(subprocess.check_output(cmd, shell = True))
     pos1 = uuid.find("\\n") + 2
     uuid = uuid[pos1:-15]
     return uuid
