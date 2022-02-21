@@ -12,14 +12,11 @@ import sys
 
 def get_hwid():
     """ Fetch this machine's HWID for authentication """
-    try:
-        cmd = 'wmic csproduct get uuid'
-        uuid = str(subprocess.check_output(cmd))
-        pos1 = uuid.find("\\n") + 2
-        uuid = uuid[pos1:-15]
-        return uuid
-    except:
-        return "FAILED"
+    cmd = 'wmic csproduct get uuid'
+    uuid = str(subprocess.check_output(cmd, shell = True))
+    pos1 = uuid.find("\\n") + 2
+    uuid = uuid[pos1:-15]
+    return uuid
 
 
 
